@@ -16,6 +16,21 @@ class greet (commands .Cog ):
         self .bot =bot 
         self .join_queue ={}
         self .processing =set ()
+        self .bot .loop .create_task (self .setup_database ())
+
+    async def setup_database (self ):
+        async with aiosqlite .connect ("db/welcome.db")as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS welcome (
+                    guild_id INTEGER PRIMARY KEY,
+                    welcome_type TEXT,
+                    welcome_message TEXT,
+                    channel_id INTEGER,
+                    embed_data TEXT,
+                    auto_delete_duration INTEGER
+                )
+            ''')
+            await db .commit ()
 
     async def safe_format (self ,text ,placeholders ):
         placeholders_lower ={k .lower ():v for k ,v in placeholders .items ()}

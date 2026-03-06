@@ -19,6 +19,18 @@ class Autorole2 (Cog ):
     def __init__ (self ,bot :Yuna ):
         self .bot =bot 
         self .headers ={"Authorization":f"Bot {self.bot.http.token}"}
+        self .bot .loop .create_task (self .setup_database ())
+
+    async def setup_database (self ):
+        async with aiosqlite .connect (DATABASE_PATH )as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS autorole (
+                    guild_id INTEGER PRIMARY KEY,
+                    bots TEXT,
+                    humans TEXT
+                )
+            ''')
+            await db .commit ()
 
     async def get_autorole (self ,guild_id :int ):
         try:

@@ -17,6 +17,17 @@ class Unblacklist (commands .Cog ):
         self .bot =bot 
 
         self .db_path ="db/block.db"
+        self .bot .loop .create_task (self .setup_database ())
+
+    async def setup_database (self ):
+        async with aiosqlite .connect (self .db_path )as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS guild_blacklist (
+                    guild_id INTEGER PRIMARY KEY,
+                    timestamp TIMESTAMP
+                )
+            ''')
+            await db .commit ()
 
     @commands .command (name ="unblacklist")
 

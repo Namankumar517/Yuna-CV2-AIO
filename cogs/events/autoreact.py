@@ -15,6 +15,19 @@ class AutoReactListener (commands .Cog ):
         self .bot =bot 
         self .db_path ='db/autoreact.db'
         self .rate_limited_users =set ()
+        self .bot .loop .create_task (self .setup_database ())
+
+    async def setup_database (self ):
+        async with aiosqlite .connect (self .db_path )as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS autoreact (
+                    guild_id INTEGER,
+                    trigger TEXT,
+                    emojis TEXT,
+                    PRIMARY KEY(guild_id, trigger)
+                )
+            ''')
+            await db .commit ()
 
     async def get_triggers (self ,guild_id ):
         async with aiosqlite .connect (self .db_path )as db :

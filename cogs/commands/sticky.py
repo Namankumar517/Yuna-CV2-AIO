@@ -290,6 +290,28 @@ class StickyConfigView(ui.LayoutView):
 class Sticky(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.bot.loop.create_task(self.setup_database())
+
+    async def setup_database(self):
+        async with aiosqlite.connect("db/stickymessages.db") as db:
+            await db.execute(
+                """CREATE TABLE IF NOT EXISTS sticky_messages (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    guild_id INTEGER,
+                    channel_id INTEGER,
+                    message_type TEXT,
+                    message_content TEXT,
+                    embed_data TEXT,
+                    enabled INTEGER DEFAULT 1,
+                    last_message_id INTEGER,
+                    delay_seconds INTEGER DEFAULT 0,
+                    trigger_count INTEGER DEFAULT 0,
+                    ignore_bots INTEGER DEFAULT 1,
+                    ignore_commands INTEGER DEFAULT 1,
+                    auto_delete_after INTEGER DEFAULT 0
+                )"""
+            )
+            await db.commit()
 
     @commands.group(name="sticky", invoke_without_command=True)
     @commands.has_permissions(manage_channels=True)

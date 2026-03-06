@@ -18,6 +18,39 @@ class AntiLink (commands .Cog ):
         self .invite_pattern =re .compile (r'(https?://)?(www\.)?(discord\.(gg|io|me|li)|discordapp\.com/invite)/\S+')
         self .gif_pattern =re .compile (r'(\.gif$|^https://(tenor\.com|giphy\.com/gifs|cdn\.discordapp\.com|media\.discordapp\.net))')
         self .spotify_pattern =re .compile (r'^https://open\.spotify\.com/track/\S+')
+        self .bot .loop .create_task (self .setup_database ())
+
+    async def setup_database (self ):
+        async with aiosqlite .connect ("db/automod.db")as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS automod (
+                    guild_id INTEGER PRIMARY KEY,
+                    enabled INTEGER DEFAULT 0
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS automod_punishments (
+                    guild_id INTEGER,
+                    event TEXT,
+                    punishment TEXT,
+                    PRIMARY KEY(guild_id, event)
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS automod_ignored (
+                    guild_id INTEGER,
+                    type TEXT,
+                    id INTEGER,
+                    PRIMARY KEY(guild_id, type, id)
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS automod_logging (
+                    guild_id INTEGER PRIMARY KEY,
+                    log_channel INTEGER
+                )
+            ''')
+            await db .commit ()
 
     async def is_automod_enabled (self ,guild_id ):
         async with aiosqlite .connect ("db/automod.db")as db :

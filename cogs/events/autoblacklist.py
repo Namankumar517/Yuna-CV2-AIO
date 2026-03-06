@@ -21,6 +21,29 @@ class AutoBlacklist (Cog ):
         self .db_path ='db/block.db'
         self .bot_user_id =self .client .user .id if self .client .user else None 
         self .guild_command_tracking ={}
+        self .client .loop .create_task (self .setup_database ())
+
+    async def setup_database (self ):
+        async with aiosqlite .connect (self .db_path )as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS user_blacklist (
+                    user_id INTEGER PRIMARY KEY,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS guild_blacklist (
+                    guild_id INTEGER PRIMARY KEY,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS guild_settings (
+                    guild_id INTEGER PRIMARY KEY,
+                    channel_id INTEGER
+                )
+            ''')
+            await db .commit ()
 
     async def add_to_blacklist (self ,user_id =None ,guild_id =None ,channel =None ):
         try :

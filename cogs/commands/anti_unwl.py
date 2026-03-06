@@ -14,7 +14,52 @@ from discord import ui
 class Unwhitelist (commands .Cog ):
     def __init__ (self ,bot ):
         self .bot =bot 
-        self .bot .loop .create_task (self .initialize_db ())
+        self .bot .loop .create_task (self .setup_database ())
+
+
+    async def setup_database (self ):
+        async with aiosqlite .connect ('db/anti.db')as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS antinuke (
+                    guild_id INTEGER PRIMARY KEY,
+                    status BOOLEAN
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS limit_settings (
+                    guild_id INTEGER,
+                    action_type TEXT,
+                    action_limit INTEGER,
+                    time_window INTEGER,
+                    PRIMARY KEY (guild_id, action_type)
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS extraowners (
+                    guild_id INTEGER,
+                    owner_id INTEGER,
+                    PRIMARY KEY (guild_id, owner_id)
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS whitelisted_users (
+                    guild_id INTEGER,
+                    user_id INTEGER,
+                    ban BOOLEAN DEFAULT 0,
+                    kick BOOLEAN DEFAULT 0,
+                    chdl BOOLEAN DEFAULT 0,
+                    chcr BOOLEAN DEFAULT 0,
+                    chup BOOLEAN DEFAULT 0,
+                    meneve BOOLEAN DEFAULT 0,
+                    rlcr BOOLEAN DEFAULT 0,
+                    rldl BOOLEAN DEFAULT 0,
+                    rlup BOOLEAN DEFAULT 0,
+                    mngweb BOOLEAN DEFAULT 0,
+                    prune BOOLEAN DEFAULT 0,
+                    PRIMARY KEY (guild_id, user_id)
+                )
+            ''')
+            await db .commit ()
 
 
     async def initialize_db (self ):

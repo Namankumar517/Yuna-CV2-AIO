@@ -130,6 +130,12 @@ class NoPrefix(commands.Cog):
                 )
             ''')
 
+            await db.execute('''
+                CREATE TABLE IF NOT EXISTS staff (
+                    id INTEGER PRIMARY KEY
+                )
+            ''')
+
             async with db.execute("PRAGMA table_info(np);") as cursor:
                 columns = [info[1] for info in await cursor.fetchall()]
 

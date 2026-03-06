@@ -31,28 +31,41 @@ if os.path.isdir(lang_directory):
 def load_current_language ()->dict :
     lang_file_path =os .path .join (
     lang_directory ,f"lang.{current_language_code}.json")
-    with open (lang_file_path ,encoding ="utf-8")as lang_file :
-        current_language =json .load (lang_file )
-    return current_language 
+    if not os.path.exists(lang_file_path):
+        return {}
+    try:
+        with open (lang_file_path ,encoding ="utf-8")as lang_file :
+            current_language =json .load (lang_file )
+        return current_language 
+    except (json.JSONDecodeError, PermissionError):
+        return {}
 
 
 def load_instructions ()->dict :
     instructions ={}
-    for file_name in os .listdir ("instructions"):
-        if file_name .endswith ('.txt'):
-            file_path =os .path .join ("instructions",file_name )
-            with open (file_path ,'r',encoding ='utf-8')as file :
-                file_content =file .read ()
+    if not os.path.exists("instructions"):
+        return instructions
+    try:
+        for file_name in os .listdir ("instructions"):
+            if file_name .endswith ('.txt'):
+                file_path =os .path .join ("instructions",file_name )
+                with open (file_path ,'r',encoding ='utf-8')as file :
+                    file_content =file .read ()
 
-                variable_name =file_name .split ('.')[0 ]
-                instructions [variable_name ]=file_content 
+                    variable_name =file_name .split ('.')[0 ]
+                    instructions [variable_name ]=file_content 
+    except Exception:
+        pass
     return instructions 
 
 def load_active_channels ()->dict :
     if os .path .exists ("channels.json"):
-        with open ("channels.json","r",encoding ='utf-8')as f :
-            active_channels =json .load (f )
-    return active_channels 
+        try:
+            with open ("channels.json","r",encoding ='utf-8')as f :
+                return json .load (f )
+        except json.JSONDecodeError:
+            return {}
+    return {}
 """
 : ! Aegis !
     + Discord: itsfizys

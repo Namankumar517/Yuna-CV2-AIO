@@ -30,6 +30,12 @@ class Block (commands .Cog ):
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        await db .execute ('''
+            CREATE TABLE IF NOT EXISTS guild_settings (
+                guild_id INTEGER PRIMARY KEY,
+                channel_id INTEGER
+            )
+        ''')
         await db .commit ()
 
 

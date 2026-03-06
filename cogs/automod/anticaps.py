@@ -15,6 +15,39 @@ class AntiCaps (commands .Cog ):
         self .bot =bot 
         self .caps_threshold =70 
         self .mute_duration =2 *60 
+        self .bot .loop .create_task (self .setup_database ())
+
+    async def setup_database (self ):
+        async with aiosqlite .connect ("db/automod.db")as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS automod (
+                    guild_id INTEGER PRIMARY KEY,
+                    enabled INTEGER DEFAULT 0
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS automod_punishments (
+                    guild_id INTEGER,
+                    event TEXT,
+                    punishment TEXT,
+                    PRIMARY KEY(guild_id, event)
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS automod_ignored (
+                    guild_id INTEGER,
+                    type TEXT,
+                    id INTEGER,
+                    PRIMARY KEY(guild_id, type, id)
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS automod_logging (
+                    guild_id INTEGER PRIMARY KEY,
+                    log_channel INTEGER
+                )
+            ''')
+            await db .commit ()
 
     async def is_automod_enabled (self ,guild_id ):
         async with aiosqlite .connect ("db/automod.db")as db :

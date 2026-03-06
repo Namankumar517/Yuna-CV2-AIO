@@ -23,6 +23,23 @@ class Mention (commands .Cog ):
         self .color =0x000000 
 
         self .bot_name ="Yuna"
+        self .bot .loop .create_task (self .setup_database ())
+
+    async def setup_database (self ):
+        async with aiosqlite .connect ("db/block.db")as db :
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS user_blacklist (
+                    user_id INTEGER PRIMARY KEY,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            await db .execute ('''
+                CREATE TABLE IF NOT EXISTS guild_blacklist (
+                    guild_id INTEGER PRIMARY KEY,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            await db .commit ()
 
     async def is_blacklisted (self ,message ):
 

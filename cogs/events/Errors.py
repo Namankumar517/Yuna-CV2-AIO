@@ -107,12 +107,12 @@ class Errors (Cog ):
                 container.add_item(discord.ui.TextDisplay(f"# \u274c Error: {error_type}"))
                 container.add_item(discord.ui.Separator())
                 error_details = (
-                    f"<:arrow:1373603890309890059> **Command:** {command_name}\n"
-                    f"<:arrow:1373603890309890059> **Error Type:** {error_type}\n"
-                    f"<:arrow:1373603890309890059> **Error Message:** {error_message}\n"
-                    f"<:arrow:1373603890309890059> **Guild:** {ctx.guild.name} ({ctx.guild.id})\n"
-                    f"<:arrow:1373603890309890059> **Channel:** {ctx.channel.name} ({ctx.channel.id})\n"
-                    f"<:arrow:1373603890309890059> **User:** [{ctx.author}](https://discord.com/users/{ctx.author.id}) ({ctx.author.id})"
+                    f"<:arrow:1479361920254345391> **Command:** {command_name}\n"
+                    f"<:arrow:1479361920254345391> **Error Type:** {error_type}\n"
+                    f"<:arrow:1479361920254345391> **Error Message:** {error_message}\n"
+                    f"<:arrow:1479361920254345391> **Guild:** {ctx.guild.name} ({ctx.guild.id})\n"
+                    f"<:arrow:1479361920254345391> **Channel:** {ctx.channel.name} ({ctx.channel.id})\n"
+                    f"<:arrow:1479361920254345391> **User:** [{ctx.author}](https://discord.com/users/{ctx.author.id}) ({ctx.author.id})"
                 )
                 container.add_item(
                     discord.ui.Section(

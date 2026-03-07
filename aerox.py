@@ -66,13 +66,14 @@ def print_system_ready ():
 
 
 load_dotenv ()
-
+_log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+os.makedirs(_log_dir, exist_ok=True)
 
 logging .basicConfig (
 level =logging .ERROR ,
 format ='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 handlers =[
-logging .StreamHandler ()
+    logging .FileHandler (os.path.join(_log_dir, 'discord.log'))
 ]
 )
 
@@ -350,7 +351,6 @@ async def on_interaction (interaction :discord .Interaction ):
         logger.error("INTERACTION", f"Custom ID: {custom_id if 'custom_id' in locals() else 'Unknown'}")
         logger.debug("INTERACTION", f"Traceback: {traceback.format_exc()}")
         logger .error (f"Interaction failed: {str(e)}")
-        traceback .print_exc ()
         try :
             if not interaction .response .is_done ():
                 await interaction .response .send_message ("An error occurred while handling this interaction.",ephemeral =True )
@@ -383,7 +383,7 @@ async def on_command_completion (context :commands .Context )->None :
                 
                 container .add_item (discord .ui .Separator ())
                 
-                command_details =f"<:arrow:1373603890309890059> **Command Name:** {executed_command}\n<:arrow:1373603890309890059> **Guild Name:** {context.guild.name} ({context.guild.id})\n<:arrow:1373603890309890059> **Channel Name:** {context.channel.name} ({context.channel.id})\n<:arrow:1373603890309890059> **User:** [{context.author}](https://discord.com/users/{context.author.id}) ({context.author.id})"
+                command_details =f"<:arrow:1479361920254345391> **Command Name:** {executed_command}\n<:arrow:1479361920254345391> **Guild Name:** {context.guild.name} ({context.guild.id})\n<:arrow:1479361920254345391> **Channel Name:** {context.channel.name} ({context.channel.id})\n<:arrow:1479361920254345391> **User:** [{context.author}](https://discord.com/users/{context.author.id}) ({context.author.id})"
                 
                 container .add_item (
                     discord .ui .Section (

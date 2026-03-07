@@ -10,6 +10,7 @@ import pytz
 from datetime import datetime
 import traceback
 import io
+import os
 
 config = {
     'logLevel': 'debug',
@@ -81,6 +82,9 @@ class Logger:
         except Exception:
             self.tz = pytz.UTC
 
+        self.log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'logs', 'bot.log')
+        os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
+
     def _time(self):
         """Returns the current time formatted as HH:MM:SS in the configured timezone."""
         return datetime.now(self.tz).strftime('%H:%M:%S')
@@ -118,25 +122,25 @@ class Logger:
 
         context, msg, error = self._parse(args)
 
+        # File logging
+        timestamp = datetime.now(self.tz).strftime('%Y-%m-%d %H:%M:%S')
+        with open(self.log_file, 'a', encoding='utf-8') as f:
+            f.write(f"[{timestamp}] [{level.upper()}] [{context}] {msg}\n")
+            if error:
+                traceback.print_exception(type(error), error, error.__traceback__, file=f)
+
+        # Console logging - ONLY info and success
+        if level not in ['info', 'success']:
+            return
+
         line = (
             f"{text.timestamp(self._time())} "
             f"{self.badges[level](context)} "
             f"{text.message(msg)}"
         )
 
-        if level in ['error', 'warn']:
-            sys.stderr.write(line + "\n")
-            sys.stderr.flush()
-        else:
-            sys.stdout.write(line + "\n")
-            sys.stdout.flush()
-
-        if error:
-            output = io.StringIO()
-            traceback.print_exception(type(error), error, error.__traceback__, file=output)
-            tb_str = output.getvalue()
-            sys.stdout.write(text.dimmed(tb_str) + "\n")
-            sys.stdout.flush()
+        sys.stdout.write(line + "\n")
+        sys.stdout.flush()
 
     def info(self, *a): self._log('info', *a)
     def success(self, *a): self._log('success', *a)
